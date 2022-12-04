@@ -1,8 +1,8 @@
 #ifndef HELLO_WORD_KEYBOARD_FW_HW_KEYBOARD_H
 #define HELLO_WORD_KEYBOARD_FW_HW_KEYBOARD_H
 
+#include "color.h"
 #include "spi.h"
-
 
 class HWKeyboard
 {
@@ -68,6 +68,7 @@ public:
         WS_HIGH = 0xFE,
         WS_LOW = 0xE0
     };
+    uint8_t fade_cnt;
 
     uint8_t* ScanKeyStates();
     void ApplyDebounceFilter(uint32_t _filterTimeUs = 100);
@@ -80,7 +81,29 @@ public:
     uint8_t* GetHidReportBuffer(uint8_t _reportId);
     uint8_t  GetTouchBarState(uint8_t _id = 0);
     void SetRgbBufferByID(uint8_t _keyId, Color_t _color, float _brightness = 1);
+    void SetMyRgbBufferByID(uint8_t _keyId, RGB rgb, float _brightness);
 
+    void GetPressedStatus();
+    static Color_t fade(Color_t c);
+
+    Color_t ledColor[LED_NUMBER] {};
+    KeyCode_t KeyMatrix[6][15] = {
+            {ESC,F1,F2,F3,F4,F5,F6,F7,F8,F9,F10,F11,F12,PAUSE},
+            {GRAVE_ACCENT,NUM_1,NUM_2,NUM_3,NUM_4,NUM_5,NUM_6,NUM_7,NUM_8,NUM_9,NUM_0,MINUS,EQUAL,BACKSPACE,INSERT},
+            {TAB,Q,W,E,R,T,Y,U,I,O,P,LEFT_U_BRACE,RIGHT_U_BRACE,BACKSLASH,DELETE},
+            {CAP_LOCK,A,S,D,F,G,H,J,K,L,SEMI_COLON,QUOTE,ENTER,PAGE_UP},
+            {LEFT_SHIFT,Z,X,C,V,B,N,M,COMMA,PERIOD,SLASH,RIGHT_SHIFT,UP_ARROW,PAGE_DOWN},
+            {LEFT_CTRL,LEFT_GUI,LEFT_ALT,SPACE,RIGHT_ALT,FN,RIGHT_CTRL,LEFT_ARROW,DOWN_ARROW,RIGHT_ARROW },
+    };
+    bool KeyPressedStatus[6][15] = {};
+    int16_t LEDMatrixIndex[6][15] = {
+            {13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0},
+            {14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28},
+            {43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29},
+            {44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57},
+            {71, 70, 69, 68, 67, 66, 65, 64, 63, 62, 61, 60, 59, 58},
+            {72, 73, 74,  75,  76, 77, 78, 79, 80, 81}
+    };
 
     int16_t keyMap[5][IO_NUMBER] = {
         {67,61,60,58,59,52,55,51,50,49,48,47,46,3,

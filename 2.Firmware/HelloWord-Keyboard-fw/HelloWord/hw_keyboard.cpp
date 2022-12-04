@@ -103,8 +103,10 @@ bool HWKeyboard::FnPressed()
 
 void HWKeyboard::SetRgbBufferByID(uint8_t _keyId, HWKeyboard::Color_t _color, float _brightness)
 {
-    // To ensure there's no sequence zero bits, otherwise will case ws2812b protocol error.
+    // To ensure there's no sequence zero bits, otherwise will cause ws2812b protocol error.
     if (_color.b < 1)_color.b = 1;
+    // update color in keyboard object
+    ledColor[_keyId] = _color;
 
     for (int i = 0; i < 8; i++)
     {
@@ -115,6 +117,22 @@ void HWKeyboard::SetRgbBufferByID(uint8_t _keyId, HWKeyboard::Color_t _color, fl
         rgbBuffer[_keyId][2][i] =
             ((uint8_t) ((float) _color.b * _brightness) >> brightnessPreDiv) & (0x80 >> i) ? WS_HIGH : WS_LOW;
     }
+}
+
+void HWKeyboard::SetMyRgbBufferByID(uint8_t _keyId, RGB rgb, float _brightness)
+{
+  // To ensure there's no sequence zero bits, otherwise will cause ws2812b protocol error.
+  if (rgb.b < 1) rgb.b = 1;
+
+  for (int i = 0; i < 8; i++)
+  {
+    rgbBuffer[_keyId][0][i] =
+        ((uint8_t) ((float) rgb.g * _brightness) >> brightnessPreDiv) & (0x80 >> i) ? WS_HIGH : WS_LOW;
+    rgbBuffer[_keyId][1][i] =
+        ((uint8_t) ((float) rgb.r * _brightness) >> brightnessPreDiv) & (0x80 >> i) ? WS_HIGH : WS_LOW;
+    rgbBuffer[_keyId][2][i] =
+        ((uint8_t) ((float) rgb.b * _brightness) >> brightnessPreDiv) & (0x80 >> i) ? WS_HIGH : WS_LOW;
+  }
 }
 
 
@@ -151,7 +169,8 @@ bool HWKeyboard::KeyPressed(KeyCode_t _key)
 
     if (_key < RESERVED)
     {
-        index = _key / 8;
+//        index = _key / 8;
+        index = 0;
         bitIndex = (_key + 8) % 8;
     } else
     {
@@ -162,6 +181,14 @@ bool HWKeyboard::KeyPressed(KeyCode_t _key)
     return hidBuffer[index + 1] & (1 << bitIndex);
 }
 
+void HWKeyboard::GetPressedStatus() {
+    for(int i = 0; i < 6; i++) {
+        for (int j = 0; j < 15; j ++) {
+            KeyCode_t k = HWKeyboard::KeyMatrix[i][j];
+            HWKeyboard::KeyPressedStatus[i][j] = KeyPressed(k);
+        }
+    }
+}
 
 void HWKeyboard::Press(HWKeyboard::KeyCode_t _key)
 {
@@ -169,7 +196,8 @@ void HWKeyboard::Press(HWKeyboard::KeyCode_t _key)
 
     if (_key < RESERVED)
     {
-        index = _key / 8;
+//        index = _key / 8;
+        index = 0;
         bitIndex = (_key + 8) % 8;
     } else
     {
@@ -210,4 +238,12 @@ uint8_t HWKeyboard::GetTouchBarState(uint8_t _id)
     return _id == 0 ? tmp : (tmp & (1 << (_id - 1)));
 }
 
-
+HWKeyboard::Color_t HWKeyboard::fade(HWKeyboard::Color_t c) {
+    if (c.r > 0)
+        c.r -= 1;
+    if (c.g > 0)
+        c.g -= 1;
+    if (c.b > 0)
+        c.b -= 1;
+    return c;
+}

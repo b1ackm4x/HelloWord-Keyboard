@@ -19,6 +19,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -fno-rtti")
 
+#set(CMAKE_BUILD_TYPE "debug")
+
 #Uncomment for hardware floating point
 #add_compile_definitions(ARM_MATH_CM4;ARM_MATH_MATRIX_CHECK;ARM_MATH_ROUNDING)
 #add_compile_options(-mfloat-abi=hard -mfpu=fpv4-sp-d16)
@@ -47,22 +49,8 @@ elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "MinSizeRel")
     add_compile_options(-Os)
 else ()
     message(STATUS "Minimal optimization, debug info included")
-    add_compile_options(-Og -g)
+    add_compile_options(-O0 -g)
 endif ()
-
-include_directories(
-        ./
-        USB_DEVICE/App
-        USB_DEVICE/Target
-        Core/Inc
-        Drivers/STM32F1xx_HAL_Driver/Inc
-        Drivers/STM32F1xx_HAL_Driver/Inc/Legacy
-        Middlewares/ST/STM32_USB_Device_Library/Core/Inc
-        Middlewares/ST/STM32_USB_Device_Library/Class/CustomHID/Inc
-        Drivers/CMSIS/Device/ST/STM32F1xx/Include
-        Drivers/CMSIS/Include
-        UserApp
-)
 
 add_definitions(-DUSE_HAL_DRIVER -DSTM32F103xB)
 
@@ -73,6 +61,10 @@ file(GLOB_RECURSE SOURCES
         USB_DEVICE/*.*
         Core/*.*
         HelloWord/*.*
+        HelloWord/RGBMatrix/*.*
+        HelloWord/RGBMatrix/Math/*.*
+        HelloWord/RGBMatrix/Animation/*.*
+        HelloWord/RGBMatrix/Color/*.*
         UserApp/*.*
         )
 
@@ -83,6 +75,28 @@ add_link_options(-mcpu=cortex-m3 -mthumb -mthumb-interwork)
 add_link_options(-T ${LINKER_SCRIPT})
 
 add_executable(${PROJECT_NAME}.elf ${SOURCES} ${LINKER_SCRIPT})
+
+set(PATH_TO_INCLUDE_DIRECTORY
+        ./
+        USB_DEVICE/App
+        USB_DEVICE/Target
+        Core/Inc
+        Drivers/STM32F1xx_HAL_Driver/Inc
+        Drivers/STM32F1xx_HAL_Driver/Inc/Legacy
+        Middlewares/ST/STM32_USB_Device_Library/Core/Inc
+        Middlewares/ST/STM32_USB_Device_Library/Class/CustomHID/Inc
+        Drivers/CMSIS/Device/ST/STM32F1xx/Include
+        Drivers/CMSIS/Include
+        HelloWord/RGBMatrix/Math
+        HelloWord/RGBMatrix/Animation
+        HelloWord/RGBMatrix/Animation/Runner
+        HelloWord/RGBMatrix/Color
+        HelloWord/RGBMatrix
+        HelloWord
+        UserApp)
+
+target_include_directories(${PROJECT_NAME}.elf PRIVATE ${PATH_TO_INCLUDE_DIRECTORY} )
+
 
 set(HEX_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.hex)
 set(BIN_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.bin)

@@ -1,7 +1,7 @@
+#include "HelloWord/RGBMatrix/Math/math_func.h"
 #include "common_inc.h"
 #include "configurations.h"
-#include "HelloWord/hw_keyboard.h"
-
+#include "hw_keyboard.h"
 
 /* Component Definitions -----------------------------------------------------*/
 KeyboardConfig_t config;
@@ -27,42 +27,39 @@ void Main()
 
     // Keyboard Report Start
     HAL_TIM_Base_Start_IT(&htim4);
-
+    eeconfig_update_rgb_matrix_default();
 
     while (true)
     {
-        /*---- This is a demo RGB effect ----*/
-        static uint32_t t = 1;
-        static bool fadeDir = true;
-
-        fadeDir ? t++ : t--;
-        if (t > 250) fadeDir = false;
-        else if (t < 1) fadeDir = true;
-
-        for (uint8_t i = 0; i < HWKeyboard::LED_NUMBER; i++)
-            keyboard.SetRgbBufferByID(i, HWKeyboard::Color_t{(uint8_t) t, 50, 0});
-        /*-----------------------------------*/
-
-        // Send RGB buffers to LEDs
-        keyboard.SyncLights();
+      rgb_matrix_task();
     }
 }
 
 /* Event Callbacks -----------------------------------------------------------*/
 extern "C" void OnTimerCallback() // 1000Hz callback
 {
+    g_rgb_timer ++;
     keyboard.ScanKeyStates();  // Around 40us use 4MHz SPI clk
+    keyboard.GetPressedStatus();
     keyboard.ApplyDebounceFilter(100);
     keyboard.Remap(keyboard.FnPressed() ? 2 : 1);  // When Fn pressed use layer-2
 
-    if (keyboard.KeyPressed(HWKeyboard::LEFT_CTRL) &&
-        keyboard.KeyPressed(HWKeyboard::A))
+
+    if (keyboard.KeyPressed(HWKeyboard::A) )
     {
         // do something...
 
         // or trigger some keys...
-        keyboard.Press(HWKeyboard::DELETE);
+        keyboard.Press(HWKeyboard::B);
     }
+    if (keyboard.KeyPressed(HWKeyboard::RIGHT_CTRL) )
+    {
+        // do something...
+
+        // or trigger some keys...
+        keyboard.Press(HWKeyboard::LEFT_CTRL);
+    }
+
 
     // Report HID key states
     USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,
@@ -81,4 +78,13 @@ extern "C"
 void HID_RxCpltCallback(uint8_t* _data)
 {
 
+}
+
+extern "C" void HWKeyboard_SetRGB(int i, RGB rgb) {
+  keyboard.SetMyRgbBufferByID(i, rgb, 1);
+}
+
+extern "C" void HWKeyboard_SyncLights()
+{
+  keyboard.SyncLights();
 }
