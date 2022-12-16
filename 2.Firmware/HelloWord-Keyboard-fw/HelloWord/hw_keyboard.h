@@ -142,7 +142,7 @@ private:
     uint8_t remapBuffer[IO_NUMBER / 8]{};
     uint8_t rgbBuffer[LED_NUMBER][3][8]{};
     uint8_t wsCommit[64] = {0};
-    uint8_t brightnessPreDiv = 2; // 1/4
+    uint8_t brightnessPreDiv = 4; // 1/4
 };
 
 

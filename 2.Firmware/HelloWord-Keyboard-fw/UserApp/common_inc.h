@@ -12,6 +12,8 @@ extern "C" {
 #include "usb_device.h"
 #include "color.h"
 #include "rgb_matrix.h"
+#include "openrgb_handler.h"
+
 
 
 void Main();

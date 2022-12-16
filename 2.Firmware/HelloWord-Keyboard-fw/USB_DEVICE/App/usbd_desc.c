@@ -63,10 +63,10 @@
   * @{
   */
 
-#define USBD_VID     4097
+#define USBD_VID     0x1001
 #define USBD_LANGID_STRING     1033
 #define USBD_MANUFACTURER_STRING     "BlackMax"
-#define USBD_PID_FS     61699
+#define USBD_PID_FS     0xf103
 #define USBD_PRODUCT_STRING_FS     "HelloWord Smart Keyboard"
 #define USBD_CONFIGURATION_STRING_FS     "Custom HID Config"
 #define USBD_INTERFACE_STRING_FS     "Custom HID Interface"

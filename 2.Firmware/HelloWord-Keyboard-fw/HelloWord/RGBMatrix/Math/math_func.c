@@ -1,3 +1,4 @@
+#include "math_func.h"
 #include "stdint-gcc.h"
 
 uint8_t b_m16_interleave[8] = {0, 49, 49, 41, 90, 27, 117, 10};
@@ -30,6 +31,10 @@ uint8_t sin8(uint8_t theta) {
   y += 128;
 
   return y;
+}
+
+uint8_t cos8(uint8_t theta) {
+  return sin8( theta + 64);
 }
 
 uint8_t atan2_8(int16_t dy, int16_t dx) {
@@ -67,4 +72,60 @@ uint16_t scale16by8(uint16_t i, uint8_t scale) {
   uint16_t result;
   result = (i * scale) / 256;
   return result;
+}
+
+uint8_t sqrt16(uint16_t x) {
+  if (x <= 1) {
+    return x;
+  }
+
+  uint8_t low = 1; // lower bound
+  uint8_t hi, mid;
+
+  if (x > 7904) {
+    hi = 255;
+  } else {
+    hi = (x >> 5) + 8; // initial estimate for upper bound
+  }
+
+  do {
+    mid = (low + hi) >> 1;
+    if ((uint16_t)(mid * mid) > x) {
+      hi = mid - 1;
+    } else {
+      if (mid == 255) {
+        return 255;
+      }
+      low = mid + 1;
+    }
+  } while (hi >= low);
+
+  return low - 1;
+}
+
+uint8_t qadd8(uint8_t i, uint8_t j) {
+  uint16_t t = i + j;
+  if (t > 255)
+    t = 255;
+  return t;
+}
+int8_t qadd7(int8_t i, int8_t j) {
+  int16_t t = i + j;
+  if (t > 127)
+    t = 127;
+  return t;
+}
+
+
+#include<stdlib.h>
+uint8_t random8(void) {
+//  #define RAND16_SEED  1337
+//  uint16_t rand16seed = RAND16_SEED;
+//
+//  rand16seed = (rand16seed * FASTLED_RAND16_2053) + FASTLED_RAND16_13849;
+//  // return the sum of the high and low bytes, for better
+//  //  mixing and non-sequential correlation
+//  return (uint8_t)(((uint8_t)(rand16seed & 0xFF)) +
+//                   ((uint8_t)(rand16seed >> 8)));
+  return (uint8_t)rand();
 }

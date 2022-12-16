@@ -58,7 +58,7 @@ struct RGBCONFIGPACKED {
 } ;
 
 typedef union {
-    uint64_t raw;
+    uint32_t raw;
     struct RGBCONFIGPACKED rgb_config;
 } rgb_config_t;
 

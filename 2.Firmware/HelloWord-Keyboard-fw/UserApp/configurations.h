@@ -25,7 +25,8 @@ typedef struct KeyboardConfig_t
 } KeyboardConfig_t;
 
 extern KeyboardConfig_t config;
-
+void pull_rgb_matrix_config_from_eeprom(void);
+void set_rgb_matrix_config_to_eeprom(void);
 
 #ifdef __cplusplus
 }

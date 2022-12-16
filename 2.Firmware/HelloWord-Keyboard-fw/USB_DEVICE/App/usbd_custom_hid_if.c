@@ -90,8 +90,8 @@
 #define LSB(_x) ((_x) & 0xFF)
 #define MSB(_x) ((_x) >> 8)
 
-#define RAWHID_USAGE_PAGE	0xFFC0
-#define RAWHID_USAGE		0x0C00
+#define RAWHID_USAGE_PAGE	0xFF60
+#define RAWHID_USAGE		0x61
 #define RAWHID_TX_SIZE 64
 #define RAWHID_RX_SIZE 64
 /** Usb HID report descriptor. */
@@ -139,7 +139,7 @@ __ALIGN_BEGIN static uint8_t CUSTOM_HID_ReportDesc_FS[USBD_CUSTOM_HID_REPORT_DES
 	0x0A, LSB(RAWHID_USAGE), MSB(RAWHID_USAGE),
 
 	0xA1, 0x01,				// Collection 0x01
-    0x85, 0x02,             // REPORT_ID (3)
+        0x85, 0x02,                           // REPORT_ID (3)
 	0x75, 0x08,				// report size = 8 bits
 	0x15, 0x00,				// logical minimum = 0
 	0x26, 0xFF, 0x00,		// logical maximum = 255
